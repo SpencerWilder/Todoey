@@ -11,7 +11,7 @@ import CoreData
 
 class CategoryViewControllerTableViewController: UITableViewController {
 
-    var categoryArray = ["Food List"]//[String]()
+    var categoryArray = [Category]()//[String]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
@@ -31,7 +31,7 @@ class CategoryViewControllerTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = categoryArray[indexPath.row]
+        cell.textLabel?.text = categoryArray[indexPath.row].name
         return cell
     }
 
@@ -49,7 +49,10 @@ class CategoryViewControllerTableViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
             
-            self.categoryArray.append(textField.text!)
+            let newCategory = Category(context: self.context)
+            newCategory.name = textField.text
+            self.categoryArray.append(newCategory)
+            
             self.saveCategories()
         }
         alert.addTextField { (alertTextField) in
@@ -60,15 +63,13 @@ class CategoryViewControllerTableViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    func loadCategories() {
+    func loadCategories(with requests : NSFetchRequest<Category> = Category.fetchRequest()) {
         
-        
-        
-//        do {
-//            try categoryArray = context.fetch(categoryArray.fetchRequest)
-//        } catch {
-//            print("Error Fetching Data: \(error)")
-//        }
+        do {
+            try categoryArray = context.fetch(requests)
+        } catch {
+            print("Error Fetching Data: \(error)")
+        }
         
     }
     
